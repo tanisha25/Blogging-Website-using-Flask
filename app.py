@@ -68,7 +68,8 @@ def deletepost():
 if __name__ == '__main__':
       # Create the database schema
     with app.app_context():
-        db.create_all()
+        db.drop_all()  # Drop all tables
+        db.create_all()  # Create all tables
         print("Database schema created.")
     app.run(debug=True)
     
