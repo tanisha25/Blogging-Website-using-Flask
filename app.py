@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
@@ -66,12 +66,9 @@ def deletepost():
 
     return redirect(url_for('index'))
 
-# Correct usage of before_first_request
-@app.before_first_request
-def create_tables():
-    """Create tables before the first request if they do not exist."""
-    with app.app_context():
-        db.create_all()  # Creates tables based on your models
+# Instead of using before_first_request, create the tables directly here
+with app.app_context():
+    db.create_all()  # Creates tables if they do not exist
 
 if __name__ == '__main__':
     app.run(debug=True)
