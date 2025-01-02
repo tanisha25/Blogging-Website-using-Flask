@@ -1,13 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy 
 from datetime import datetime
 import os
 
 app = Flask(__name__)
 
-# Configure the database URI, you need to set DATABASE_URL as an environment variable
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')  # or replace with your PostgreSQL URI
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # To disable a feature not needed
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # To suppress a warning
 
 db = SQLAlchemy(app)
 
@@ -18,7 +17,7 @@ class Blogpost(db.Model):
     title = db.Column(db.String(50))
     subtitle = db.Column(db.String(50))
     author = db.Column(db.String(20))
-    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+    date_posted = db.Column(db.DateTime)
     content = db.Column(db.Text)
 
 @app.route('/')
@@ -64,15 +63,16 @@ def deletepost():
 
     post = Blogpost.query.filter_by(id=post_id).first()
 
-    if post:
-        db.session.delete(post)
-        db.session.commit()
-    
+    db.session.delete(post)
+    db.session.commit()
+
     return redirect(url_for('index'))
 
-if __name__ == '__main__':
-    # Create the database schema
+@app.before_first_request
+def create_tables():
+    """Create tables before the first request if they do not exist."""
     with app.app_context():
-        db.create_all()  # Create all tables if they don't exist
-        print("Database schema created.")
+        db.create_all()  # Creates tables based on your models
+
+if __name__ == '__main__':
     app.run(debug=True)
