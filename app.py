@@ -1,17 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy 
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # To suppress a warning
-
 db = SQLAlchemy(app)
 
 class Blogpost(db.Model):
-    __tablename__ = 'blogpost'  # Specify the table name here
+    __tablename__ = 'blogpost'
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50))
@@ -68,6 +66,7 @@ def deletepost():
 
     return redirect(url_for('index'))
 
+# Correct usage of before_first_request
 @app.before_first_request
 def create_tables():
     """Create tables before the first request if they do not exist."""
