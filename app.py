@@ -5,7 +5,14 @@ import os
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+# PostgreSQL configuration using environment variables
+DB_SERVER = os.getenv('DB_SERVER')  # e.g., your-db-instance.xxxxxxx.us-west-2.rds.amazonaws.com
+DB_NAME = os.getenv('DB_NAME')  # e.g., your_database_name
+DB_USER = os.getenv('DB_USER')  # e.g., your_db_user
+DB_PASSWORD = os.getenv('DB_PASSWORD')  # e.g., your_db_password
+
+# Update to PostgreSQL URL
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_SERVER}/{DB_NAME}'
 db = SQLAlchemy(app)
 
 class Blogpost(db.Model):
